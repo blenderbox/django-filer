@@ -13,6 +13,6 @@ class IconsMixin(object):
         if getattr(self, '_icon', False):
             for size in FILER_ADMIN_ICON_SIZES:
                 icon = self.extension if FILER_EXTENSION_BASED_ICONS else self._icon
-                r[size] = "%sicons/%s_%sx%s.png" % (
-                            FILER_STATICMEDIA_PREFIX, icon, size, size)
+                r[size] = "%sicons/%sx%s/%s.png" % (
+                            FILER_STATICMEDIA_PREFIX, size, size, icon)
         return r
