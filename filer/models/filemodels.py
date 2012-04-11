@@ -5,10 +5,11 @@ from django.core.files.base import ContentFile
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from filer.fields.multistorage_file import MultiStorageFileField
-from filer.models import mixins
 from filer import settings as filer_settings
 from filer.models.foldermodels import Folder
 from polymorphic import PolymorphicModel, PolymorphicManager
+from filer.settings import FILER_ADMIN_ICON_SIZES, FILER_STATICMEDIA_PREFIX,\
+                           FILER_EXTENSION_BASED_ICONS
 import hashlib
 import os
 
@@ -26,7 +27,8 @@ class FileManager(PolymorphicManager):
     def find_duplicates(self, file):
         return [i for i in self.exclude(pk=file.pk).filter(sha1=file.sha1)]
 
-class File(PolymorphicModel, mixins.IconsMixin):
+
+class File(PolymorphicModel):
     file_type = 'File'
     _icon = "file"
     folder = models.ForeignKey(Folder, related_name='all_files',
@@ -243,6 +245,16 @@ class File(PolymorphicModel, mixins.IconsMixin):
     @property
     def duplicates(self):
         return File.objects.find_duplicates(self)
+
+    @property
+    def icons(self):
+        r = {}
+        if getattr(self, '_icon', False):
+            for size in FILER_ADMIN_ICON_SIZES:
+                icon = self.extension if FILER_EXTENSION_BASED_ICONS or self.extension == "" else self._icon
+                r[size] = "%sicons/%sx%s/%s.png" % (
+                            FILER_STATICMEDIA_PREFIX, size, size, icon)
+        return r
 
     class Meta:
         app_label = 'filer'

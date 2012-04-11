@@ -5,6 +5,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from filer.models import filemodels
 
+
 class Clipboard(models.Model):
     user = models.ForeignKey(auth_models.User, related_name="filer_clipboards")
     files = models.ManyToManyField(
